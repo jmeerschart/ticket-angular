@@ -1,0 +1,43 @@
+<div class="container">    
+    <h1>Ticket manager</h1>
+    <div class="container">      
+        <form>
+      <div 
+          *ngFor="let ticket of tickets"
+            class="row alert alert-secondary " 
+            role="alert">
+          
+          <div class="col-md-7">
+            <span *ngIf="!ticket.editable">
+                {{ticket.owner}}
+            </span>
+            <span *ngIf="ticket.editable">
+                <input [(ngModel)] = "ticket.owner" name="owner" >
+            </span>
+          </div>
+          <div class="col-md-3">
+              <span *ngIf="!ticket.editable">
+                {{ticket.value}}$
+              </span>
+              <span *ngIf="ticket.editable">
+                  <input [(ngModel)] = "ticket.value" name="value" >
+              </span>
+          </div>
+          <div class="col-md-2 right">
+            <button type="button"  class="btn btn-sm btn-success" (click)="ticket.editable=false">
+              <i class="fa fa-floppy-o "></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-primary" (click)="ticket.editable=true">
+              <i class="fa fa-pencil "></i>
+            </button>
+            <button type="button"  class="btn btn-sm btn-danger" (click)="deleteTicket(ticket)">
+              <i class="fa fa-trash-o "></i>
+            </button>            
+          </div>
+      </div>
+    </form>
+    </div>
+    <div class="right">
+      <button class="btn btn-primary" (click)="addTicket()" >+ Add new ticket</button>
+    </div>
+</div>

@@ -1,0 +1,40 @@
+<div class="container">
+  <h1>Ticket manager</h1>
+  <br><br>
+  <div class="row">
+    <div class="col-md-5 col-sm-12 ">
+      <label> Montant de la facture</label>
+      <input type="number" name="number" [(ngModel)]="total" max="1" max="200" (keyup)="change()">
+      <br><br>
+      <div>
+        <button type="button" class="btn btn-primary" (click)="calc()" >Calculer</button>
+      </div>
+      <br><br>
+      <div class="alert alert-info" role="alert" *ngIf="total && totalResult && !dirty">
+        To pay 
+        <strong>{{total}}</strong> 
+        you need to give : 
+        <br><br>
+        <div *ngFor="let ticket of ticketsResult">
+            <strong>{{ticket.number}}</strong> tickets of  <strong>{{ticket.value}}</strong>$
+        </div>
+        <div>
+          Rest to pay {{total - totalResult}}                 
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2"> </div>
+    <div class="col-md-5" col-sm-12>
+      <div *ngFor="let ticket of tickets" class="row alert alert-secondary " role="alert">
+        <div class="col">
+          {{ticket.owner}}
+        </div>
+        <div class="col">
+          {{ticket.value}}$
+        </div>
+      </div>
+     
+    </div>
+
+  </div>
+</div>
