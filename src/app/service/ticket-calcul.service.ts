@@ -46,6 +46,83 @@ export class TicketCalculService {
     //return null;
   }
 
+  calcul_V2(total:number,tickets : Array<TicketModel>) : Array<TicketResultModel>{
+    let result:Array<TicketResultModel> = new Array<TicketResultModel>();
+
+    let sortedTickets: Array<TicketModel> = tickets.sort((n1,n2) => n1.value - n2.value);
+    //Création du resultat vide
+    sortedTickets.forEach((ticket)=>{
+      let tRM: TicketResultModel = new TicketResultModel();
+      tRM.number = 0;
+      tRM.value = ticket.value;
+      tRM.owner = ticket.owner;
+      result.push(tRM);
+    });
+
+    let minTicketValue:number = sortedTickets[0].value;
+    if(minTicketValue <= total){
+      let found = false;
+      sortedTickets.forEach((ticket, i)=>{
+          let rest = total % ticket.value;
+          let dividende = (total - rest) / ticket.value;
+          if(rest == 0){
+            result[i].value = ticket.value;
+            result[i].owner = ticket.owner;
+            result[i].number = dividende;
+            found = true;
+            return false;
+          }
+      });
+      if(found == false){
+        let possibility = JSON.parse(JSON.stringify(result));
+        let objectResultat = {resultat : result, possibilite :possibility};
+        this.reccurCalc(objectResultat, total, 0);
+        result = JSON.parse(JSON.stringify(objectResultat.possibilite));
+      }
+    }
+    return result;
+  }
+
+  private reccurCalc(objectResultat, total:number, index:number) : boolean{
+    //let initialTotal:number = total;
+    let needToPay:number = total;
+    objectResultat.resultat[index].number = 0;
+    let toReturn:boolean = false;
+    if(index < (objectResultat.resultat.length -1)){
+      while(needToPay >= objectResultat.resultat[index].value){
+        let ret:boolean = this.reccurCalc(objectResultat, needToPay, index +1);
+        if(ret == false){
+          objectResultat.resultat[index].number = objectResultat.resultat[index].number +1;
+          needToPay = needToPay - objectResultat.resultat[index].value;
+        }else{
+          objectResultat.possibilite = JSON.parse(JSON.stringify(objectResultat.resultat));
+          toReturn = true;
+          break;
+        }
+      }
+    }else{
+      while(needToPay >= objectResultat.resultat[index].value){
+        objectResultat.resultat[index].number = objectResultat.resultat[index].number +1;
+        needToPay = needToPay - objectResultat.resultat[index].value;
+      }
+      if(needToPay == 0){
+        objectResultat.possibilite = JSON.parse(JSON.stringify(objectResultat.resultat));
+        toReturn = true;
+      }
+    }
+    if(toReturn == false){
+      if(objectResultat.possibilite == null){
+        objectResultat.possibilite = JSON.parse(JSON.stringify(objectResultat.resultat));
+      }else{
+        if(this.sumResult(objectResultat.possibilite) < this.sumResult(objectResultat.resultat)){
+          objectResultat.possibilite = JSON.parse(JSON.stringify(objectResultat.resultat));
+        }
+      }
+      objectResultat.resultat[index].number = 0;
+    }
+    return toReturn;
+  }
+
 
   private convertResult(combinTicketsResult : Array<TicketModel>) : Array<TicketResultModel>{
     let result:Array<TicketResultModel> = new Array<TicketResultModel>();
